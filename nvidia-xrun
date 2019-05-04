@@ -19,8 +19,14 @@ function execute {
 }
 
 function turn_off_gpu {
-  echo 'Removing Nvidia bus from the kernel'
-  execute "sudo tee /sys/bus/pci/devices/${DEVICE_BUS_ID}/remove <<<1"
+  if [[ ${REMOVE_DEVICE} -eq 1 ]]
+    then
+    echo 'Removing Nvidia bus from the kernel'
+    execute "sudo tee /sys/bus/pci/devices/${DEVICE_BUS_ID}/remove <<<1"
+  else
+    echo "Setting Nvidia bus power control to auto"
+    execute "sudo tee /sys/bus/pci/devices/${DEVICE_BUS_ID}/power/control <<<auto"
+  fi
 
   echo 'Enabling powersave for the PCIe controller'
   execute "sudo tee /sys/bus/pci/devices/${CONTROLLER_BUS_ID}/power/control <<<auto"
